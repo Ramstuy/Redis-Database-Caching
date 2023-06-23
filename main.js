@@ -1,4 +1,3 @@
-//
 import express from 'express';
 import fetch from 'node-fetch';
 import redis from 'redis';
@@ -8,16 +7,12 @@ const REDIS_PORT = process.env.PORT || 6379;
 
 const client = redis.createClient(REDIS_PORT);
 
-//client.connect();
-
 const app = express();
 
-// Set response
 function setResponse(username, repos) {
   return `${username} has ${repos} Github Repository`;
 }
 
-// Make request to Github for data
 async function getRepos(req, res, next) {
   try {
     console.log('Fetching Data...');
@@ -30,7 +25,6 @@ async function getRepos(req, res, next) {
 
     const repos = data.public_repos;
 
-    // Set data to Redis
     client.setex(username, 3600, repos);
 
     res.send(setResponse(username, repos));
@@ -40,7 +34,6 @@ async function getRepos(req, res, next) {
   }
 }
 
-// Cache middleware
 function cache(req, res, next) {
   const { username } = req.params;
 
